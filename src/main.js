@@ -1,76 +1,56 @@
 import { initGl } from 'engine/engine'
 import Mesh from 'engine/mesh'
 import Shader from 'engine/shader'
+import Texture from 'engine/texture'
 import Camera from 'camera'
+import Input from 'input'
+import Game from 'game'
+import Sprite, { SpriteFont } from 'engine/sprite'
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix'
-var gl = null
-var canvas = null
+let gl = null
+let canvas = null
+let game = null
 
-var shader = null
-var camera = null
-var mesh = null
-
-const resize = () => 
+const resize = function()
 {
-	canvas.style.position = "relative"
-	canvas.style.left = "5px"
-	canvas.style.top = "5px"
-
-	canvas.width = window.innerWidth - 10
-	canvas.height = window.innerHeight - 10
-	canvas.style.width = canvas.width
-	canvas.style.height = canvas.height
-
+	canvas.width = window.innerWidth * window.devicePixelRatio
+	canvas.height = window.innerHeight * window.devicePixelRatio
+	canvas.style.width = "" + window.innerWidth + "px"
+	canvas.style.height = "" + window.innerHeight + "px"
 	gl.viewport(0, 0, canvas.width, canvas.height)
+	game.resize()
 }
-const main = () => 
+const main = function()
 {
 	canvas = document.getElementById("main-canvas")
+
+	canvas.width = window.innerWidth * window.devicePixelRatio
+	canvas.height = window.innerHeight * window.devicePixelRatio
+	canvas.style.width = "" + window.innerWidth + "px"
+	canvas.style.height = "" + window.innerHeight + "px"
+
 	gl = initGl(canvas)
+	Input.init()
 	if (gl)
 	{
 		gl.clearColor(0.4, 0.4, 0.8, 1)
-		gl.enable(gl.DEPTH_TEST)
-		gl.disable(gl.CULL_FACE)
 		gl.depthFunc(gl.LEQUAL)
 	}
+	game = new Game()
+	game.init(gl)
 
-	mesh = new Mesh(gl)
-	mesh.begin()
-	mesh.addCube([-1,-1,-1], [1,1,1], [0,0],[1,1])
-	mesh.end()
-	mesh.computeNormals()
-
-	camera = new Camera()
-	camera.position = [ 5, 4, 3 ]
-	camera.target = [ 0, 0, 0 ]
-	camera.update()
-
-	shader = new Shader(gl, "resources/shaders/vert.glsl", "resources/shaders/frag.glsl")
-
-	window.addEventListener("resize", resize)
 	resize();
-	window.requestAnimationFrame(loop)
+	window.addEventListener("resize", resize)
 
-	var request = window.requestAnimationFrame(loop)
+	let af = window.requestAnimationFrame(loop)
 }
-const loop = () => 
+const loop = function(t)
 {
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	game.update()
+	game.render()
 
-	let world = mat4.create()
-	shader.bind()
-	shader.setVec3("LightDir", [-1,-3,2])
-	shader.setVec4("Ambient", [0.1,0.1,0.1,0])
-	shader.setVec4("Color", [1,1,1,1])
-
-	shader.setMat4("World", world)
-	shader.setMat4("View", camera.view)
-	shader.setMat4("Proj", camera.proj)
-
-	mesh.draw(shader)
-
-	window.requestAnimationFrame(loop)
+	Input.update()
+	let af = window.requestAnimationFrame(loop)
 }
 
 document.addEventListener("DOMContentLoaded", main)

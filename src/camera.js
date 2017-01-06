@@ -22,6 +22,7 @@ export default class Camera
 	}
 	update()
 	{
+		this.aspect = window.innerWidth / window.innerHeight;
 		mat4.lookAt(this.view, this.position, this.target, this.up)
 		mat4.perspective(this.proj, this.angle, this.aspect, this.znear, this.zfar)
 	}

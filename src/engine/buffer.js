@@ -4,6 +4,7 @@ export default class Buffer
 {
 	constructor(gl, array, index)
 	{
+		console.log("made buffer")
 		this.gl = gl
 		this.buffer = gl.createBuffer()
 		this.write(array, index)

@@ -4,8 +4,8 @@ export default class Shader
 {
 	static onLoad(gl, shader, vsrc, fsrc)
 	{
-		shader.vertShader = Shader.compile(gl, vsrc, gl.VERTEX_SHADER)
-		shader.fragShader = Shader.compile(gl, fsrc, gl.FRAGMENT_SHADER)
+		shader.vertShader = Shader.compile(gl, vsrc, gl.VERTEX_SHADER, shader.fnames[0])
+		shader.fragShader = Shader.compile(gl, fsrc, gl.FRAGMENT_SHADER, shader.fnames[1])
 
 		console.log(shader.vertShader)
 		console.log(shader.fragShader)
@@ -17,16 +17,19 @@ export default class Shader
 
 		if (!gl.getProgramParameter(shader.program, gl.LINK_STATUS))
 		{
+			console.log("failed to link shader")
 			return;
 		}
 
 		gl.useProgram(shader.program)
+
 		shader.posAttr = gl.getAttribLocation(shader.program, "iPos")
 		shader.normAttr = gl.getAttribLocation(shader.program, "iNorm")
 		shader.texAttr = gl.getAttribLocation(shader.program, "iTex")
+		shader.colAttr = gl.getAttribLocation(shader.program, "iCol")
 	}
 
-	static compile(gl, src, type)
+	static compile(gl, src, type, fname)
 	{
 		let shader = gl.createShader(type)
 
@@ -34,6 +37,7 @@ export default class Shader
 		gl.compileShader(shader)
 		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
 		{
+			console.log("failed to compile shader: ", fname)
 			return null;
 		}
 		return shader;
@@ -42,6 +46,7 @@ export default class Shader
 	constructor(gl, vs, fs)
 	{
 		this.gl = gl
+		this.fnames = [vs, fs]
 		var that = this
 
 		let vsp = new Promise((resolve, reject) => {
@@ -74,9 +79,10 @@ export default class Shader
 	bind()
 	{
 		this.gl.useProgram(this.program)
-		this.gl.enableVertexAttribArray(this.texAttr)
-		this.gl.enableVertexAttribArray(this.posAttr)
-		this.gl.enableVertexAttribArray(this.normAttr)
+		if (this.texAttr > -1) this.gl.enableVertexAttribArray(this.texAttr)
+		if (this.posAttr > -1) this.gl.enableVertexAttribArray(this.posAttr)
+		if (this.normAttr > -1) this.gl.enableVertexAttribArray(this.normAttr)
+		if (this.colAttr > -1) this.gl.enableVertexAttribArray(this.colAttr)
 	}
 
 	setMat4(name, val)
@@ -92,5 +98,11 @@ export default class Shader
 	setVec3(name, val)
 	{
 		this.gl.uniform3fv(this.gl.getUniformLocation(this.program, name), val)
+	}
+	setTexture(name, tex)
+	{
+		this.gl.activeTexture(this.gl.TEXTURE0)
+		this.gl.bindTexture(this.gl.TEXTURE_2D, tex.texture)
+		this.gl.uniform1i(this.gl.getUniformLocation(this.program, name), 0)
 	}
 }

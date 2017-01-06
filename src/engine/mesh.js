@@ -79,6 +79,8 @@ export default class Mesh
 
 	constructor(gl)
 	{
+		console.log("made mesh")
+		
 		this.gl = gl
 		this.material = 
 		{
@@ -206,40 +208,64 @@ export default class Mesh
 			}
 		}
 	}
-	// addSphere(center, rad, sectors, slices, tmin, tmax)
-	// {
-	// 	if (slices < 2 || sectors < 3)
-	// 	{
-	// 		return;
-	// 	}
+	addSphere(center, rad, sectors, slices, tmin, tmax, f)
+	{
+		if (slices < 2 || sectors < 3)
+		{
+			return;
+		}
 
-	// 	let vcount = this.positions.length / 3
-	// 	this.addVertex([center[0], center[1]+rad, center[2]], [0,1,0], [0,0])
-	// 	for (let v = 1; v < slices; v += 1)
-	// 	{
-	// 		let vn = (v / slices) * Math.PI
-	// 		let sinv = Math.sin(vn)
-	// 		let cosv = Math.cos(vn)
+		let vcount = this.positions.length / 3
+		// this.addVertex([center[0], center[1]+rad, center[2]], [0,1,0], [0,0])
+		for (let v = 0; v < slices+1; v += 1)
+		{
+			let vn = (v / slices) * Math.PI
+			let sinv = Math.sin(vn)
+			let cosv = Math.cos(vn)
 
-	// 		for (let u = 0; u < sectors; u += 1)
-	// 		{
-	// 			var un = (u / sectors) * Math.PI * 2
-	// 			var cosu = Math.cos(un)
-	// 			var sinu = Math.sin(un)
-	// 			this.addVertex([
-	// 				rad * sinv * cosu,
-	// 				rad * cosv,
-	// 				rad * sinv * sinu
-	// 				], [0,1,0], [0,0])
-	// 		}
-	// 	}
-	// 	this.addVertex([center[0], center[1]-radius, center[2]], [0,-1,0], [0,0])
+			for (let u = 0; u < sectors+1; u += 1)
+			{
+				var un = (u / sectors) * Math.PI * 2
+				var cosu = Math.cos(un)
+				var sinu = Math.sin(un)
 
-	// 	for (let i = 0; i < sectors; i += 1)
-	// 	{
-	// 	}
-	// 	...
-	// }
+				let p = [
+					rad * sinv * cosu,
+					rad * cosv,
+					rad * sinv * sinu
+					]
+				let n = [sinv * cosu, cosv, sinv * sinu]
+				let t = [0,0]
+
+				if (f)
+				{
+					p = f(p, n, t)
+				}
+
+				this.addVertex(p, n, t)
+			}
+		}
+		// this.addVertex([center[0], center[1]-radius, center[2]], [0,-1,0], [0,0])
+
+		for (let i = 0; i < slices; i += 1)
+		{
+			for (let j = 0; j < sectors; j += 1)
+			{
+				let i1 = i
+				let i2 = (i+1)
+				let j1 = j % sectors
+				let j2 = (j+1) % sectors
+				let m = sectors+1
+				this.addIndex(vcount + i1 * m + j1)
+				this.addIndex(vcount + i2 * m + j2)
+				this.addIndex(vcount + i2 * m + j1)
+				this.addIndex(vcount + i1 * m + j1)
+				this.addIndex(vcount + i1 * m + j2)
+				this.addIndex(vcount + i2 * m + j2)
+			}
+		}
+		// console.log(this);
+	}
 
 	computeNormals()
 	{
