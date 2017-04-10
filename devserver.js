@@ -1,8 +1,8 @@
 let webpack = require("webpack")
-let WDS = require("webpack-dev-server")
+let webpackDevServer = require("webpack-dev-server")
 let config = require("./webpack.config.js")
 
-const server = new WDS(webpack(config), {
+const server = new webpackDevServer(webpack(config), {
 	publicPath : config.output.publicPath,
 	hot : true,
 	contentBase : "./",

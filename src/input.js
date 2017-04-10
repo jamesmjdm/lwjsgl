@@ -15,7 +15,6 @@ export default class Input
 
 	static onKeyDown(e)
 	{
-		console.log(e)
 		Input.pressedKeys[e.keyCode] = true
 		Input.releasedKeys[e.keyCode] = false
 		Input.downKeys[e.keyCode] = true

@@ -31,8 +31,13 @@ glMatrix.RANDOM = Math.random;
 glMatrix.ENABLE_SIMD = false;
 
 // Capability detection
-glMatrix.SIMD_AVAILABLE = (glMatrix.ARRAY_TYPE === window.Float32Array) && ('SIMD' in window);
-glMatrix.USE_SIMD = glMatrix.ENABLE_SIMD && glMatrix.SIMD_AVAILABLE;
+try {
+    glMatrix.SIMD_AVAILABLE = (glMatrix.ARRAY_TYPE === window.Float32Array) && ('SIMD' in window);
+    glMatrix.USE_SIMD = glMatrix.ENABLE_SIMD && glMatrix.SIMD_AVAILABLE;
+} catch (e) {
+    glMatrix.SIMD_AVAILABLE = false;
+    glMatrix.USE_SIMD = false;
+}
 
 /**
  * Sets the type of array used when creating new vectors and matrices

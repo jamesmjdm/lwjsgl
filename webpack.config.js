@@ -2,7 +2,7 @@
 let path = require("path")
 let webpack = require("webpack")
 
-const DEV_PORT = 8080
+const DEV_PORT = 1080
 
 module.exports = {
 	port : DEV_PORT,
@@ -31,7 +31,7 @@ module.exports = {
 				test : /\.js$/,
 				loader : "babel-loader", query : { presets : ["es2015", "stage-0"] },
 				include : path.join(__dirname, "src"),
-				exclude : /(node_modules|bower_components)/,
+				exclude : /node_modules/,
 			},
 			// { test : /\.less/, loader : "style!css!less!", },
 			// { test : /\.html/, loader : "html-loader" },

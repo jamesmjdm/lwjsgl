@@ -46,10 +46,15 @@ const main = function()
 }
 const loop = function(t)
 {
-	game.update()
-	game.render()
-
-	Input.update()
+	try {
+		game.update()
+		game.render()
+		Input.update()
+	}
+	catch (e) {
+		console.log("caught: ", e, "in loop")
+	}
+	
 	let af = window.requestAnimationFrame(loop)
 }
 

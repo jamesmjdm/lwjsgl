@@ -71,14 +71,12 @@ export default class Sprite
 
 			curX += r.width
 		}
-
-		// this.addQuad([curX, curY, 0], [20, 20], [1,1,1,1],
-			// [0, 0], [0.1, 0.1])
 	}
 	addQuad(pos, size, col, tex, texsize)
 	{
 		tex = tex || [0,0]
 		texsize = texsize || [1,1]
+		col = col ? col : [1,1,1,1]
 
 		this.positions.push(
 			pos[0], pos[1], pos[2],
@@ -130,7 +128,7 @@ export class SpriteFont
 		}))
 
 
-		let fontWidth = 256
+		let fontWidth = 512
 
 		let div = document.createElement("div")
 		div.style.wordWrap = "break-word"
@@ -138,7 +136,7 @@ export class SpriteFont
 		div.style.height = div.style.width
 		div.style.fontFamily = family
 		div.style.fontSize = "" + size + "px"
-		// div.style.lineHeight = "18pt"
+		div.style.lineHeight = "" + (size*1.5) + "px"
 		document.body.appendChild(div)
 
 		let spans = []
@@ -147,6 +145,8 @@ export class SpriteFont
 			let text = String.fromCharCode(i).replace(/[^\x1F-\x7E]+/g, '')
 			let span = document.createElement("span")
 			span.style.verticalAlign = "inherit"
+			span.style.display="inline-block"
+			span.style.padding="1px"
 			span.textContent = text
 			div.appendChild(span)
 			spans.push(span)
@@ -172,6 +172,8 @@ export class SpriteFont
 			
 			context.fillStyle = "white"
 			context.strokeStyle = "black"
+			context.shadowBlur = 1
+			context.shadowColor = "black"
 			
 			context.textAlign = "left"
 			context.textBaseline = "bottom"
@@ -187,7 +189,7 @@ export class SpriteFont
 					height : r.height
 				}
 				// context.strokeText(t, r.left, r.bottom - dr.top)
-				context.fillText(t, r.left, r.bottom-dr.top)
+				context.fillText(t, r.left+1, (r.bottom-dr.top)+1)
 				// context.text(t, r.left, r.bottom-dr.top)
 				
 				// context.beginPath()

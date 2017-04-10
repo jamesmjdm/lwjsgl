@@ -87,18 +87,4 @@ export default class Spaceship
 
 		Turret hardpoints are less accurate than fixed hardpoints.
 
-
-	michael
-	raphael
-	gabriel
-	azrael
-
-	uriel
-	raguel
-	saraquel
-	remiel
-	izidkiel
-	hanael
-	kepharel
-
  */
