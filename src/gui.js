@@ -102,8 +102,8 @@ export default class Gui
         
         this.gl = gl
         this.sprite = new Sprite(gl)
-        this.font = new SpriteFont(gl, "'Orbitron'", 32)
-        this.smallFont = new SpriteFont(gl, "'Orbitron'", 14)
+        this.font = new SpriteFont(gl, "Courier New", 32)
+        this.smallFont = new SpriteFont(gl, "Courier New", 14)
         this.shader = new Shader(gl, "shaders/spritevs.glsl", "shaders/spriteps.glsl")
 
         this.radarTex = Gui.createRadarTex(this.gl)
@@ -137,10 +137,10 @@ export default class Gui
     renderHud(player)
     {
         this.sprite.beginText(this.shader, this.smallFont, this.view, this.proj)
-        this.sprite.addText("hull integrity:", 20, 20)
-        this.sprite.addText("shields:", 20, 40)
-        this.sprite.addText("weapons:", 20, 60)
-        this.sprite.addText("reactor:", 20, 80)
+        this.sprite.addText("hull integrity: ", 20, 20)
+        this.sprite.addText("shields: ", 20, 40)
+        this.sprite.addText("weapons: ", 20, 60)
+        this.sprite.addText("reactor: ", 20, 80)
         this.sprite.addText(""+player.hullStrength, 200, 20)
         this.sprite.addText(""+player.shieldStrength + "%", 200, 40)
         this.sprite.addText(""+player.weapons[0].name, 200, 60)
@@ -159,7 +159,6 @@ export default class Gui
         let cx = window.innerWidth / 2
         let cy = window.innerHeight / 2
         mat4.fromTranslation(mapview, [cx,cy,0])
-        mat4.scale(mapview, mapview, [1/50, 1/50,1])
 
         this.sprite.beginText(this.shader, this.font, this.view, this.proj)
         this.sprite.addText("MAP", 0, 0)
@@ -173,7 +172,7 @@ export default class Gui
         for (let i = 0; i < game.asteroids.length; i++)
         {
             let p = game.asteroids[i].transform
-            // this.sprite.addQuad([p[12]-20, p[14]-20, 0], [40,40], [0.4,0.4,0.4,1])
+            this.sprite.addQuad([p[12]-2, p[14]-2, 0], [4,4], [0.4,0.4,0.4,1])
         }
         this.sprite.addQuad([player.position[0]-20, player.position[2]-20, 0], [40,40])
         this.sprite.addQuad([-60, -60, 0], [120,120], [0.7,0.7,0.7,1])

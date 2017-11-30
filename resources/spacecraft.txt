@@ -1,0 +1,114 @@
+
+SPACECRAFT.IO
+
+    - realm of the mad god
+    - darkverse
+    - ship loss is permadeath
+    - however, you gain xp from playing
+    - having gained enough xp you will level up
+    - registered players can save their progress
+    - maybe in future, paid players can gain xp faster
+    - when a new game starts, you begin with a ship and cash commensurate with your level
+
+main systems
+    • reactor
+    • engines
+    • weapons
+        energy blaster
+            - consumes energy
+        plasma cannon
+            - consumes energy
+            - slower firing and more damaging
+            - slight homing effect
+            - some damage through shields
+        particle beam
+            - consumes energy
+            - beam has finite length depending on level
+        ion blaster
+            - consumes energy
+            - drain enemy ships' energy
+        flak cannon
+            - fires scrap
+        railgun
+            - fires railgun ammo
+            - consumes energy
+        missile
+            - fires rocket ammo
+            - speed,maneouvrability,range,damage
+        named / heroic weapons
+            - generally consume energy
+            - some kinds might consume other resources
+    • shields
+    • hull strength / armour
+    • cargo space
+    • hardpoints and turrets
+    • sensors, radar, comms
+
+    ship reactor generates and stores energy at a constant rate
+    engine thrust consumes energy (at a low rate)
+    shield bubble absorbs multiple hits before dissolving
+    creating a shield bubble consumes a lot of energy
+
+combat
+    the aim of combat is to deplete the enemy's energy
+    without energy, no weapons or engines or shields
+
+
+ship modules
+    • afterburner
+    • jump drive
+        - jump at light speed to escape from trouble
+    • cloaking
+    • mining arm/claw/beam
+    • power storage
+    • ion resistance
+
+space objects:
+    space stations
+    jump gate
+    planets
+    asteroids
+        - mine asteroids for resources
+
+resources
+    scrap metal
+        - most common resource
+        - use it to repair your ship
+        - de facto currency
+        - fired by flak weapons
+    missiles
+        - fired by missile weapons
+    quantum crystal
+        - very rare and valuable
+        - wtf does this do?
+    metal ore
+        - common resource mined from asteroids
+        - fairly stable prices at nearby stations
+
+
+Spawn
+Game-over; Respawn
+
+Game
+    Normal hud
+        - Player names (toggleable)
+        - Player healthbars
+        - Notification / Status / Warnings
+    
+    Chatbox
+    Inventory
+    Map
+        - another canvas
+        - simple dots for enemies and asteroids
+        - redraw every ~1s
+    Galaxy Map
+        - another canvas
+        - simple diagram-style
+    Trading
+
+Spacestation:
+    Garage
+        - Refuel reactor
+        - Repair ship
+    Shop
+        - Weapons

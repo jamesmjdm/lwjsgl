@@ -14,14 +14,14 @@ varying highp vec2 oTex;
 
 void main(void)
 {
-	gl_Position = Proj * View * World * vec4(iPos, 1);
+    gl_Position = Proj * View * World * vec4(iPos, 1);
 
-	mat3 basis = mat3(World);
-	vec3 worldNorm = basis * iNorm;
-	float diffuse = clamp(
-		dot(normalize(-LightDir), normalize(worldNorm)),
-		0.0, 1.0);
+    mat3 basis = mat3(World);
+    vec3 worldNorm = basis * iNorm;
+    float diffuse = clamp(
+        dot(normalize(-LightDir), normalize(worldNorm)),
+        0.0, 1.0);
 
-	oCol = vec4(diffuse, diffuse, diffuse, 1);
-	oTex = iTex;
+    oCol = vec4(diffuse, diffuse, diffuse, 1);
+    oTex = iTex;
 }

@@ -12,7 +12,7 @@ varying highp vec2 oTex;
 
 void main(void)
 {
-	gl_Position = Proj * View * vec4(iPos, 1);
-	oCol = iCol;
-	oTex = iTex;
+    gl_Position = Proj * View * vec4(iPos, 1);
+    oCol = iCol;
+    oTex = iTex;
 }

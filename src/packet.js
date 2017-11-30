@@ -1,8 +1,8 @@
 module.exports = {
     Handshake : 10,
     PlayerExisting : 15,
-    PlayerJoin : 20,
-    PlayerLeave : 30,
+    PlayerJoined : 20,
+    PlayerLeft : 30,
     PlayerPosition : 50,
     
     // client messages

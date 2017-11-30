@@ -5,7 +5,7 @@ const Packet = require("./src/packet")
 
 const MAX_PLAYERS = 16
 
-class Client {
+class Player {
     constructor(socket, id) {
 
         this.socket = socket
@@ -22,111 +22,99 @@ class Client {
 class Game {
 
     constructor() {
-        this.clients = []
-        this.nextClientId = 1
+        this.players = []
+        this.nextPlayerId = 1
         this.stateBuf = Buffer.alloc(MAX_PLAYERS*32+100)
 
-        this.server = new ws.Server({ port : 9001, perMessageDeflate : false }, () => {
-            console.log("server listening on OVER 9000")
-        })
-        this.server.on("connection", (socket) => {
-            console.log("client connected")
-            this.nextClientId++
+        this.server = new ws.Server({ 
+                port : 9001, 
+                perMessageDeflate : false,
+                clientTracking : true,
+            }, () => {
+                console.log("server listening on OVER 9000")
+            })
+        this.server.on("connection", socket => {
+            console.log("player connected")
+            this.nextPlayerId++
 
-            let nc = new Client(socket, this.nextClientId)
+            let np = new Player(socket, this.nextPlayerId)
 
             socket.on("message", (data, flags) => {
-                this.clientMessage(nc, data)
+                this.playerMessage(np, data)
             })
-            socket.on("close", (evt) => {
-                this.clientLeft(nc)
+            socket.on("close", evt => {
+                this.playerLeft(np)
             })
 
-            this.clientJoined(nc)
+            this.playerJoined(np)
         })
     }
 
-    clientJoined(cl) {
-        console.log("client joined")
+    playerJoined(player) {
+        console.log("player joined")
         
-        this.clients.push(cl)
+        this.players.push(player)
         
         // send handshake to new player
-        cl.writeBuf.writeUInt16BE(Packet.Handshake, 0)
-        cl.writeBuf.writeUInt16BE(cl.id, 2)
-        cl.socket.send(cl.writeBuf)
+        player.writeBuf.writeUInt16BE(Packet.Handshake, 0)
+        player.writeBuf.writeUInt16BE(player.id, 2)
+        player.socket.send(player.writeBuf)
         
-        this.clients.forEach((c) => {
+        this.players.forEach(p => {
             // send all existing players to new player
-            cl.writeBuf.writeUInt16BE(Packet.PlayerExisting, 0)
-            cl.writeBuf.writeUInt16BE(c.id, 2)
-            cl.socket.send(cl.writeBuf)
+            player.writeBuf.writeUInt16BE(Packet.PlayerExisting, 0)
+            player.writeBuf.writeUInt16BE(p.id, 2)
+            player.socket.send(player.writeBuf)
         })
 
-        this.clients.forEach((c) => {
-            if (c === cl) {
+        this.players.forEach(p => {
+            if (p === player) {
                 return;
             }
             // send player join message
-            c.writeBuf.writeUInt16BE(Packet.PlayerJoin, 0)
-            c.writeBuf.writeUInt16BE(cl.id, 2)
-            c.socket.send(c.writeBuf)
+            p.writeBuf.writeUInt16BE(Packet.PlayerJoined, 0)
+            p.writeBuf.writeUInt16BE(player.id, 2)
+            p.socket.send(p.writeBuf)
         })
     }
-    clientMessage(cl, data) {
+    playerMessage(player, data) {
         let msg = data.readUInt16BE(0) // which message
 
         switch (msg) {
             case Packet.ClientPosition: {
-                cl.position.x = data.readFloatBE(2)
-                cl.position.y = data.readFloatBE(6)
-                cl.velocity.x = data.readFloatBE(10)
-                cl.velocity.y = data.readFloatBE(14)
-                cl.angle = data.readFloatBE(18)
+                player.position.x = data.readFloatBE(2)
+                player.position.y = data.readFloatBE(6)
+                player.velocity.x = data.readFloatBE(10)
+                player.velocity.y = data.readFloatBE(14)
+                player.angle = data.readFloatBE(18)
                 break;
             }
         }
     }
-    clientLeft(cl) {
-        console.log("client left", cl.id)
+    playerLeft(player) {
+        console.log("player left", player.id)
         // send player leave message to all players
-        this.clients = this.clients.filter(c => c != cl)
+        this.players = this.players.filter(p => p !== player)
 
-        this.clients.forEach(c => {
-            c.writeBuf.writeUInt16BE(Packet.PlayerLeft, 0)
-            c.writeBuf.writeUInt16BE(cl.id, 2)
-            c.socket.send(c.writeBuf)
+        this.players.forEach(p => {
+            p.writeBuf.writeUInt16BE(Packet.PlayerLeft, 0)
+            p.writeBuf.writeUInt16BE(player.id, 2)
+            p.socket.send(p.writeBuf)
         })
     }
     update() {
-        
-        // statebuf holds 32b per player and 100b for overheads
-        // you have been warned
-        // this.stateBuf.writeUInt16BE(Packet.GlobalState, 0)
-        // let offset = 2
 
-        // this.clients.forEach((c) => {
-        //     this.stateBuf.writeUInt16BE(c.id, offset)
-        //     this.stateBuf.writeFloatBE(c.position.x, offset+2)
-        //     this.stateBuf.writeFloatBE(c.position.y, offset+6)
-        //     this.stateBuf.writeFloatBE(c.velocity.x, offset+10)
-        //     this.stateBuf.writeFloatBE(c.velocity.y, offset+14)
-        //     this.stateBuf.writeFloatBE(c.angle, offset+18)
-        //     offset += 22
-        // })
+        this.players.forEach(p1 => {
 
-        // this.clients.forEach((c) => {
-        //     c.socket.send(this.stateBuf)
-        // })
-
-        this.clients.forEach((c) => {
-            this.clients.forEach((d) => {
-                d.writeBuf.writeUInt16BE(Packet.PlayerPosition, 0)
-                d.writeBuf.writeUInt16BE(c.id, 2)
-                d.writeBuf.writeFloatBE(c.position.x, 6)
-                d.writeBuf.writeFloatBE(c.position.y, 10)
-                d.writeBuf.writeFloatBE(c.angle, 14)
-                d.socket.send(d.writeBuf)
+            this.players.forEach(p2 => {
+                p2.writeBuf.writeUInt16BE(Packet.PlayerPosition, 0)
+                p2.writeBuf.writeUInt16BE(p1.id, 2)
+                p2.writeBuf.writeFloatBE(p1.position.x, 6)
+                p2.writeBuf.writeFloatBE(p1.position.y, 10)
+                p2.writeBuf.writeFloatBE(p1.velocity.x, 14)
+                p2.writeBuf.writeFloatBE(p1.velocity.y, 18)
+                p2.writeBuf.writeFloatBE(p1.angle, 22)
+                p2.socket.send(p2.writeBuf)
             })
         })
 

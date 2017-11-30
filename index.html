@@ -6,7 +6,19 @@
 	</head>
 	<body>
 		<canvas id="main-canvas"></canvas>
-        <button onclick="join()">Join</button>
-        <button onclick="leave()">Leave</button>
+
+        <!-- Start Game dialog -->
+        <div class="dialog dialog-hide" id="dialog-start">
+            <h2>spacecraftio</h2>
+            <hr/>
+            <button>join game</button>
+        </div>
+
+        <!-- Respawn dialog -->
+        <div class="dialog dialog-hide" id="dialog-respawn">
+            <h2>game over :(</h2>
+            <hr/>
+            <button>respawn</button>
+        </div>
 	</body>
 </html>
