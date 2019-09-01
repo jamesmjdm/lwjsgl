@@ -18,5 +18,8 @@
     "webpack": "^1.14.0",
     "webpack-dev-server": "^1.16.2",
     "webpack-server": "^0.1.2"
+  },
+  "dependencies": {
+    "ws": "^7.1.2"
   }
 }
