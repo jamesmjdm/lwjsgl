@@ -10,8 +10,7 @@ uniform mat4 Proj;
 varying lowp vec4 oCol;
 varying highp vec2 oTex;
 
-void main(void)
-{
+void main(void) {
     gl_Position = Proj * View * vec4(iPos, 1);
     oCol = iCol;
     oTex = iTex;

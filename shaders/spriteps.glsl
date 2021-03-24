@@ -9,8 +9,7 @@ uniform lowp vec4 Ambient;
 uniform lowp vec4 Diffuse;
 uniform lowp vec4 Emissive;
 
-void main(void)
-{
+void main(void) {
     float d = 1.0 / 512.0;
     vec4 c = texture2D(DiffuseMap, vec2(oTex.x, oTex.y)) * oCol;
     vec4 cxm = texture2D(DiffuseMap, vec2(oTex.x-d, oTex.y));

@@ -26,16 +26,14 @@ module.exports = {
 	},
 
 	module : {
-		loaders : [
-			{
+		loaders : [ {
 				test : /\.js$/,
 				loader : "babel-loader", query : { presets : ["es2015", "stage-0"] },
 				include : path.join(__dirname, "src"),
 				exclude : /node_modules/,
 			},
 			// { test : /\.less/, loader : "style!css!less!", },
-			// { test : /\.html/, loader : "html-loader" },
-			{ test : /\.json/, loader : "json-loader" },
+			// { test : /\.html/, loader : "html-loader" }, { test : /\.json/, loader : "json-loader" },
 		]
 	},
 

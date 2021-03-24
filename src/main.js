@@ -49,8 +49,7 @@ const main = function() {
 
     gl = initGl(canvas)
     Input.init()
-    if (gl)
-    {
+    if (gl) {
         gl.clearColor(0.4, 0.4, 0.8, 1)
         gl.depthFunc(gl.LEQUAL)
     }

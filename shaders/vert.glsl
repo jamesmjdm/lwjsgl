@@ -12,8 +12,7 @@ uniform vec3 LightDir;
 varying lowp vec4 oCol;
 varying highp vec2 oTex;
 
-void main(void)
-{
+void main(void) {
     gl_Position = Proj * View * World * vec4(iPos, 1);
 
     mat3 basis = mat3(World);

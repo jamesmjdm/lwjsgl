@@ -1,17 +1,12 @@
 // collision.js
 
-export class CollisionNode
-{
-    constructor()
-    {
-        
+export class CollisionNode {
+    constructor() {
     }
 }
 
-export default class CollisionManager
-{
-    constructor()
-    {
+export default class CollisionManager {
+    constructor() {
 
     }
 }

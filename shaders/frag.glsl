@@ -9,8 +9,7 @@ uniform lowp vec4 Ambient;
 uniform lowp vec4 Diffuse;
 uniform lowp vec4 Emissive;
 
-void main(void)
-{
+void main(void) {
     gl_FragColor = //texture2D(Sampler, vec2(oTex.x, oTex.y)) * 
         (Ambient + oCol) * Diffuse
         + Emissive

@@ -6,15 +6,13 @@ import { mat4, vec3, vec4 } from 'gl-matrix'
 import Input, { ord } from 'input'
 
 
-export default class Gui
-{
+export default class Gui {
     static None = 0;
     static Map = 1;
     static Inventory = 2;
     static Mission = 3;
 
-    static createMapTex(gl)
-    {
+    static createMapTex(gl) {
         let canvas = document.createElement("canvas")
         let context = canvas.getContext("2d")
         let R = 1024
@@ -29,8 +27,7 @@ export default class Gui
         context.strokeStyle = "#606060"
         let numSquares = 20
         context.beginPath()
-        for (let i = 0; i < numSquares; i++)
-        {
+        for (let i = 0; i < numSquares; i++) {
             let ni = (i/numSquares) * R
             context.moveTo(ni, 0)
             context.lineTo(ni, R)
@@ -42,8 +39,7 @@ export default class Gui
         return new Texture(gl, canvas, true)
     }
 
-    static createRadarDot(gl)
-    {
+    static createRadarDot(gl) {
         let canvas = document.createElement("canvas")
         let context = canvas.getContext("2d")
         canvas.width = 8
@@ -56,8 +52,7 @@ export default class Gui
 
         return new Texture(gl, canvas, true)
     }
-    static createRadarTex(gl)
-    {
+    static createRadarTex(gl) {
         let canvas = document.createElement("canvas")
         canvas.width = 256
         canvas.height = 256
@@ -77,15 +72,13 @@ export default class Gui
         context.stroke()
 
         context.strokeStyle = "#606060"
-        for (let i = 1; i < rings; i++)
-        {
+        for (let i = 1; i < rings; i++) {
             context.beginPath()
             context.arc(C, C, i*(R/rings), 0, Math.PI*2)
             context.stroke()
         }
         context.beginPath()
-        for (let i = 0; i < sectors; i++)
-        {
+        for (let i = 0; i < sectors; i++) {
             let s = Math.sin(Math.PI*2 * i/sectors)
             let c = Math.cos(Math.PI*2 * i/sectors)
             context.moveTo(C, C)
@@ -96,8 +89,7 @@ export default class Gui
         return new Texture(gl, canvas, true)
     }
 
-    constructor(gl)
-    {
+    constructor(gl) {
         this.state = Gui.None
         
         this.gl = gl
@@ -114,28 +106,22 @@ export default class Gui
         this.proj = mat4.create()
     }
 
-    update()
-    {
-        if (Input.keyPressed(ord('M')))
-        {
+    update() {
+        if (Input.keyPressed(ord('M'))) {
             this.state = (this.state !== Gui.Map) ? Gui.Map : Gui.None
         }
-        if (Input.keyPressed(ord('I')))
-        {
+        if (Input.keyPressed(ord('I'))) {
             this.state = (this.state !== Gui.Inventory) ? Gui.Inventory : Gui.None
         }
-        if (Input.keyPressed(ord('N')))
-        {
+        if (Input.keyPressed(ord('N'))) {
             this.state = (this.state !== Gui.Mission) ? Gui.Mission : Gui.None
         }
-        if (Input.keyPressed(27))
-        {
+        if (Input.keyPressed(27)) {
             this.state = Gui.None
         }
     }
 
-    renderHud(player)
-    {
+    renderHud(player) {
         this.sprite.beginText(this.shader, this.smallFont, this.view, this.proj)
         this.sprite.addText("hull integrity: ", 20, 20)
         this.sprite.addText("shields: ", 20, 40)
@@ -153,8 +139,7 @@ export default class Gui
         this.sprite.end()
 
     }
-    renderMap(player, game)
-    {
+    renderMap(player, game) {
         let mapview = mat4.create()
         let cx = window.innerWidth / 2
         let cy = window.innerHeight / 2
@@ -169,8 +154,7 @@ export default class Gui
         this.sprite.end()
 
         this.sprite.begin(this.shader, this.radarDot, mapview, this.proj)
-        for (let i = 0; i < game.asteroids.length; i++)
-        {
+        for (let i = 0; i < game.asteroids.length; i++) {
             let p = game.asteroids[i].transform
             this.sprite.addQuad([p[12]-2, p[14]-2, 0], [4,4], [0.4,0.4,0.4,1])
         }
@@ -178,25 +162,21 @@ export default class Gui
         this.sprite.addQuad([-60, -60, 0], [120,120], [0.7,0.7,0.7,1])
         this.sprite.end()
     }
-    renderMission(player)
-    {
+    renderMission(player) {
         this.sprite.beginText(this.shader, this.font, this.view, this.proj)
         this.sprite.addText("MISSION", 0, 0)
         this.sprite.end()
     }
-    renderInventory(player)
-    {
+    renderInventory(player) {
         this.sprite.beginText(this.shader, this.font, this.view, this.proj)
         this.sprite.addText("INVENTORY", 0, 0)
         this.sprite.end()
 
     }
-    render(player, game)
-    {
+    render(player, game) {
         mat4.ortho(this.proj, 0, window.innerWidth, window.innerHeight, 0, -1, 1)
 
-        switch (this.state)
-        {
+        switch (this.state) {
             case Gui.None:
                 this.renderHud(player, game)
                 break

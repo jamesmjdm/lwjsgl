@@ -2,12 +2,10 @@
 import Buffer from 'engine/buffer'
 import Texture from 'engine/texture'
 
-export default class Sprite
-{
+export default class Sprite {
     static MAX_QUADS = 1024;
 
-    constructor(gl)
-    {
+    constructor(gl) {
         this.gl = gl
 
         console.log("made sprite")
@@ -18,8 +16,7 @@ export default class Sprite
         this.indices = []
 
 
-        try
-        {
+        try {
             this.posBuf = new Buffer(this.gl, new Float32Array(this.positions), false)
             this.colBuf = new Buffer(this.gl, new Float32Array(this.colours), false)
             this.texBuf = new Buffer(this.gl, new Float32Array(this.texcoords), false)
@@ -37,8 +34,7 @@ export default class Sprite
         this.proj = null
     }
 
-    begin(shader, tex, view, proj)
-    {
+    begin(shader, tex, view, proj) {
         this.numQuads = 0
         this.positions = []
         this.colours = []
@@ -52,18 +48,15 @@ export default class Sprite
         this.shader = shader
         this.font = null
     }
-    beginText(shader, font, view, proj)
-    {
+    beginText(shader, font, view, proj) {
         this.begin(shader, font.texture, view, proj)
         this.font = font
     }
-    addText(text, x, y)
-    {
+    addText(text, x, y) {
         let curX = x
         let curY = y
 
-        for (let i = 0; i < text.length; i++)
-        {
+        for (let i = 0; i < text.length; i++) {
             let r = this.font.charRects[text.charCodeAt(i)]
             this.addQuad([curX, curY, 0], [r.width, r.height+2], [1,1,1,1], 
                 [r.left/this.texture.width*2, (r.top)/this.texture.height*2],
@@ -72,8 +65,7 @@ export default class Sprite
             curX += r.width
         }
     }
-    addQuad(pos, size, col, tex, texsize)
-    {
+    addQuad(pos, size, col, tex, texsize) {
         tex = tex || [0,0]
         texsize = texsize || [1,1]
         col = col ? col : [1,1,1,1]
@@ -95,8 +87,7 @@ export default class Sprite
         this.indices.push(c, c+1, c+2, c+1, c+3, c+2)
         this.numQuads++
     }
-    end()
-    {
+    end() {
         this.posBuf.write(new Float32Array(this.positions), false)
         this.colBuf.write(new Float32Array(this.colours), false)
         this.texBuf.write(new Float32Array(this.texcoords), false)
@@ -117,10 +108,8 @@ export default class Sprite
     }
 }
 
-export class SpriteFont
-{
-    constructor(gl, family, size)
-    {
+export class SpriteFont {
+    constructor(gl, family, size) {
         this.gl = gl
         this.texture = new Texture(this.gl)
         this.charRects = Array.from(Array(256).keys()).map(n => ({
@@ -141,8 +130,7 @@ export class SpriteFont
         document.body.appendChild(div)
 
         let spans = []
-        for (let i = 0; i < 256; i++)
-        {
+        for (let i = 0; i < 256; i++) {
             let text = String.fromCharCode(i).replace(/[^\x1F-\x7E]+/g, '')
             let span = document.createElement("span")
             span.style.verticalAlign = "inherit"
@@ -179,8 +167,7 @@ export class SpriteFont
             context.textAlign = "left"
             context.textBaseline = "bottom"
             let dr = div.getBoundingClientRect()
-            for (let i = 0; i < spans.length; i++)
-            {
+            for (let i = 0; i < spans.length; i++) {
                 let r = spans[i].getBoundingClientRect()
                 let t = spans[i].textContent
                 this.charRects[i] = { 

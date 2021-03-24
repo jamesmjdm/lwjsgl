@@ -20,7 +20,6 @@ class Player {
 }
 
 class Game {
-
     constructor() {
         this.players = []
         this.nextPlayerId = 1
@@ -103,9 +102,7 @@ class Game {
         })
     }
     update() {
-
         this.players.forEach(p1 => {
-
             this.players.forEach(p2 => {
                 p2.writeBuf.writeUInt16BE(Packet.PlayerPosition, 0)
                 p2.writeBuf.writeUInt16BE(p1.id, 2)

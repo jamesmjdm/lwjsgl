@@ -13,21 +13,17 @@ import Camera from 'camera'
 
 import Packet from 'packet'
 
-export class Asteroid
-{
-    constructor()
-    {
+export class Asteroid {
+    constructor() {
         this.transform = mat4.create()
         this.destroy = false
     }
 }
-export class Bullet
-{
+export class Bullet {
     static SPEED = 2;
     static MAX_AGE = 100;
 
-    constructor(pos, angle)
-    {
+    constructor(pos, angle) {
         this.transform = mat4.create()
         this.angle = angle
         this.position = pos.slice()
@@ -35,19 +31,16 @@ export class Bullet
         this.age = 1
         this.destroy = false
     }
-    update(game)
-    {
+    update(game) {
         this.position[0] += this.velocity[0]
         this.position[2] += this.velocity[2]
 
         let collision = false
-        for (let i = 0; i < game.asteroids.length; i++)
-        {
+        for (let i = 0; i < game.asteroids.length; i++) {
             let a = game.asteroids[i]
             let dx = a.transform[12] - this.position[0]
             let dy = a.transform[14] - this.position[2]
-            if (dx*dx + dy*dy < 9)
-            {
+            if (dx*dx + dy*dy < 9) {
                 collision = true
                 a.destroy = true
                 this.destroy = true
@@ -56,8 +49,7 @@ export class Bullet
         }
         
         this.age += 1
-        if (this.age > Bullet.MAX_AGE)
-        {
+        if (this.age > Bullet.MAX_AGE) {
             this.destroy = true
         }
         
@@ -65,8 +57,7 @@ export class Bullet
         mat4.rotateY(this.transform, this.transform, this.angle)
     }
 }
-export class Player
-{
+export class Player {
     id = 0
     
     acceleration = 0.02
@@ -91,13 +82,11 @@ export class Player
         name : "SR Missile",
     }]
 
-    constructor(id)
-    {
+    constructor(id) {
         this.id = id
     }
 
-    update()
-    {
+    update() {
         this.velocity[0] *= this.friction
         this.velocity[2] *= this.friction
         
@@ -109,54 +98,44 @@ export class Player
         mat4.rotateZ(this.transform, this.transform, this.roll)
     }
 }
-export class NetPlayer extends Player
-{
-    constructor(game, id)
-    {
+export class NetPlayer extends Player {
+    constructor(game, id) {
         super(id)
         this.game = game
     }
 }
-export class LocalPlayer extends Player
-{
-    constructor(game, id)
-    {
+export class LocalPlayer extends Player {
+    constructor(game, id) {
         super(id)
         this.game = game
         this.canshoot = 0
     }
-    update()
-    {
+    update() {
         this.roll *= this.rollfriction
         let speed = 0
 
-        if (Input.keyDown(65))
-        {
+        if (Input.keyDown(65)) {
             // left
             this.angle += this.turnspeed
             this.roll -= this.rollspeed
         }
-        if (Input.keyDown(68))
-        {
+        if (Input.keyDown(68)) {
             // right
             this.angle -= this.turnspeed
             this.roll += this.rollspeed
         }
-        if (Input.keyDown(87))
-        {
+        if (Input.keyDown(87)) {
             // forward
             this.velocity[0] += this.acceleration * Math.sin(this.angle)
             this.velocity[2] += this.acceleration * Math.cos(this.angle)
         }
-        if (Input.keyDown(83))
-        {
+        if (Input.keyDown(83)) {
             // brake
             this.velocity[0] *= this.brake
             this.velocity[2] *= this.brake
         }
 
-        if (Input.keyDown(32) && this.canshoot < 1)
-        {
+        if (Input.keyDown(32) && this.canshoot < 1) {
             let bullet = new Bullet(this.position, this.angle)
             this.game.bullets.push(bullet)
             this.canshoot = 20
@@ -175,8 +154,7 @@ export class LocalPlayer extends Player
 
 
 
-export default class Game
-{
+export default class Game {
     connected = false
     socket = null
     player = null
@@ -184,8 +162,7 @@ export default class Game
     asteroids = []
     bullets = []
 
-    init(gl)
-    {
+    init(gl) {
         this.gl = gl
         window.game = this
 
@@ -258,8 +235,7 @@ export default class Game
 
         this.stationMesh = new Mesh(gl)
         this.stationMesh.begin()
-        for (let i = 0; i < 8; i++)
-        {
+        for (let i = 0; i < 8; i++) {
             let t = Math.PI * 2 * i / 8
             let r = 30
             let px = Math.sin(t) * r
@@ -300,8 +276,7 @@ export default class Game
         this.camera.znear = 1
         this.camera.zfar = 1024
 
-        for (let i = 0; i < 50; i++)
-        {
+        for (let i = 0; i < 50; i++) {
             let x = (Math.random() - 0.5) * 400
             let y = 0
             let z = (Math.random() - 0.5) * 400
@@ -311,8 +286,7 @@ export default class Game
         }
 
         this.bigAsteroids = []
-        for (let i = 0; i < 20; i++)
-        {
+        for (let i = 0; i < 20; i++) {
             let x = (Math.random() - 0.5) * 1000
             let y = -250
             let z = (Math.random() - 0.5) * 1000
@@ -330,13 +304,11 @@ export default class Game
         this.gui = new Gui(gl)
     }
 
-    resize()
-    {
+    resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight
     }
 
-    update()
-    {
+    update() {
         this.gui.update()
         this.player.update()
 
@@ -367,8 +339,7 @@ export default class Game
         this.asteroids = this.asteroids.filter((a) => !a.destroy)
     }
 
-    render()
-    {
+    render() {
         let gl = this.gl
         // render 3d
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)

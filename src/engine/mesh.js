@@ -2,23 +2,19 @@
 import Buffer from 'engine/buffer'
 import { vec2, vec3 } from 'gl-matrix'
 
-export default class Mesh
-{
-    static onLoad(mesh, source, norms)
-    {
+export default class Mesh {
+    static onLoad(mesh, source, norms) {
         let lines = source.split("\n")
 
         let pos = [], norm = [], tex = [], tri = []
 
         let loadMaterial = tokens => {}
-        let setMaterials = tokens => {}
+        let setMaterial = tokens => {}
 
-        for (let i = 0; i < lines.length; i++)
-        {
+        for (let i = 0; i < lines.length; i++) {
             let line = lines[i]
             let tokens = line.split(" ")
-            switch (tokens[0])
-            {
+            switch (tokens[0]) {
                 case "v":
                     pos.push([parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3])]);
                     break;
@@ -29,8 +25,7 @@ export default class Mesh
                     tex.push([parseFloat(tokens[1]), parseFloat(tokens[2])]);
                     break;
                 case "f":  
-                    for (let j = 2; j < tokens.length-1; j++)
-                    {
+                    for (let j = 2; j < tokens.length-1; j++) {
                         tri.push(tokens[1], tokens[j], tokens[j+1]);
                     }
                     break;
@@ -49,14 +44,12 @@ export default class Mesh
 
         let uniqueVerts = []
         mesh.begin()
-        for (let i = 0; i < tri.length; i++)
-        {
+        for (let i = 0; i < tri.length; i++) {
             var ids = tri.split("/")
             ids = [ parseInt(ids[0])-1, parseInt(ids[1])-1, parseInt(ids[2])-1 ]
             var k = indexof(uniqueVerts, ids)
 
-            if (-1 === k)
-            {
+            if (-1 === k) {
                 uniqueVerts.push(ids)
                 let p = (pos[ids[0]] || [0,0,0]).slice(0, 3)
                 let n = (norm[ids[1]] || [0,1,0]).slice(0, 3)
@@ -64,26 +57,20 @@ export default class Mesh
                 mesh.addVertex(p, n, t)
                 mesh.addIndex(uniqueVerts.length-1)
             }
-            else
-            {
+            else {
                 mesh.addIndex(k)
             }
         }
 
-        if (norms)
-        {
+        if (norms) {
             mesh.computeNormals()
         }
         mesh.end()
     }
 
-    constructor(gl)
-    {
-        console.log("made mesh")
-        
+    constructor(gl) {
         this.gl = gl
-        this.material = 
-        {
+        this.material = {
             mode : gl.TRIANGLES,
             color : [1,1,1,1],
         }
@@ -97,41 +84,35 @@ export default class Mesh
         this.end()
     }
 
-    load(obj, norms)
-    {
+    load(obj, norms) {
         let mesh = this
         let client = new XMLHttpRequest()
         client.onload = () => Mesh.onLoad(mesh, client.responseText, norms);
         client.open("GET", obj)
         client.send()
     }
-    begin()
-    {
+    begin() {
         this.positions = []
         this.normals = []
         this.texcoords = []
         this.indices = []
     }
-    addVertex(pos, norm, tex)
-    {
+    addVertex(pos, norm, tex) {
         this.positions = this.positions.concat(pos)
         this.normals = this.normals.concat(norm)
         this.texcoords = this.texcoords.concat(tex)
     }
-    addIndex(i)
-    {
+    addIndex(i) {
         this.indices.push(i)
     }
-    end()
-    {
+    end() {
         this.posBuf = new Buffer(this.gl, new Float32Array(this.positions), false)
         this.normBuf = new Buffer(this.gl, new Float32Array(this.normals), false)
         this.texBuf = new Buffer(this.gl, new Float32Array(this.texcoords), false)
         this.indexBuf = new Buffer(this.gl, new Uint16Array(this.indices), true)
     }
 
-    addQuad(pos, v1, v2, t, s)
-    {
+    addQuad(pos, v1, v2, t, s) {
         let vcount = this.positions.length / 3
         let norm = vec3.create()
 
@@ -154,8 +135,7 @@ export default class Mesh
         this.addIndex(vcount+2)
     }
 
-    addCube(min, max, tpos, tsize)
-    {
+    addCube(min, max, tpos, tsize) {
         let xb = max[0] - min[0]
         let yb = max[1] - min[1]
         let zb = max[2] - min[2]
@@ -173,8 +153,7 @@ export default class Mesh
         this.addQuad([min[0], min[1], max[2]], [xb, 0, 0],  [0, yb, 0], [u0, v1], [tsize[0], -tsize[1]]);
     }
 
-    addHeightGrid(imgData, w, h, heightScale)
-    {
+    addHeightGrid(imgData, w, h, heightScale) {
         heightScale /= 255.0
 
         let getPix = index => {
@@ -188,17 +167,13 @@ export default class Mesh
         let vcount = this.positions.length / 3
         let scale = 1
 
-        for (let i = 0; i < w+1; i += 1) 
-        {
-            for (let j = 0; j < h+1; j += 1)
-            {
+        for (let i = 0; i < w+1; i += 1) {
+            for (let j = 0; j < h+1; j += 1) {
                 this.addVertex([i, imgData.data[(i*length+j)*4]*heightScale, j], [0,0,0], [i/2, j/2])
             }
         }
-        for (let i = 0; i < w; i++)
-        {
-            for (let j = 0; j < h; j++)
-            {
+        for (let i = 0; i < w; i++) {
+            for (let j = 0; j < h; j++) {
                 this.addIndex(vcount +  i   *(h+1)+j)
                 this.addIndex(vcount + (i+1)*(h+1)+j+1)
                 this.addIndex(vcount + (i+1)*(h+1)+j)
@@ -208,23 +183,18 @@ export default class Mesh
             }
         }
     }
-    addSphere(center, rad, sectors, slices, tmin, tmax, f)
-    {
-        if (slices < 2 || sectors < 3)
-        {
+    addSphere(center, rad, sectors, slices, tmin, tmax, f) {
+        if (slices < 2 || sectors < 3) {
             return;
         }
 
         let vcount = this.positions.length / 3
-        // this.addVertex([center[0], center[1]+rad, center[2]], [0,1,0], [0,0])
-        for (let v = 0; v < slices+1; v += 1)
-        {
+        for (let v = 0; v < slices+1; v += 1) {
             let vn = (v / slices) * Math.PI
             let sinv = Math.sin(vn)
             let cosv = Math.cos(vn)
 
-            for (let u = 0; u < sectors+1; u += 1)
-            {
+            for (let u = 0; u < sectors+1; u += 1) {
                 var un = (u / sectors) * Math.PI * 2
                 var cosu = Math.cos(un)
                 var sinu = Math.sin(un)
@@ -237,20 +207,15 @@ export default class Mesh
                 let n = [sinv * cosu, cosv, sinv * sinu]
                 let t = [0,0]
 
-                if (f)
-                {
+                if (f) {
                     p = f(p, n, t)
                 }
 
                 this.addVertex(p, n, t)
             }
         }
-        // this.addVertex([center[0], center[1]-radius, center[2]], [0,-1,0], [0,0])
-
-        for (let i = 0; i < slices; i += 1)
-        {
-            for (let j = 0; j < sectors; j += 1)
-            {
+        for (let i = 0; i < slices; i += 1) {
+            for (let j = 0; j < sectors; j += 1) {
                 let i1 = i
                 let i2 = (i+1)
                 let j1 = j % sectors
@@ -264,24 +229,20 @@ export default class Mesh
                 this.addIndex(vcount + i2 * m + j2)
             }
         }
-        // console.log(this);
     }
 
-    computeNormals()
-    {
+    computeNormals() {
         var i0, i1, i2,
             p0, p1, p2,
             b1 = vec3.create(), b2 = vec3.create(), norm = vec3.create(),
             n0, n1, n2,
             normals = []
 
-        for (let i = 0; i < this.positions.length/3; i += 1)
-        {
+        for (let i = 0; i < this.positions.length/3; i += 1) {
             normals.push(vec3.create())
         }
 
-        for (let i = 0; i < this.indices.length/3; i++)
-        {
+        for (let i = 0; i < this.indices.length/3; i++) {
             i0 = this.indices[i*3]
             i1 = this.indices[i*3+1]
             i2 = this.indices[i*3+2]
@@ -304,14 +265,12 @@ export default class Mesh
         }
 
         this.normals = []
-        for (let i = 0; i < normals.length; i += 1)
-        {
+        for (let i = 0; i < normals.length; i += 1) {
             vec3.normalize(normals[i], normals[i])
             this.normals.push(normals[i][0], normals[i][1], normals[i][2])
         }
     }
-    draw(shader)
-    {
+    draw(shader) {
         this.posBuf.bind(shader.posAttr, this.gl.FLOAT, 3)
         this.normBuf.bind(shader.normAttr, this.gl.FLOAT, 3)
         this.texBuf.bind(shader.texAttr, this.gl.FLOAT, 2)

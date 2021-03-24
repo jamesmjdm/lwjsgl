@@ -2,10 +2,8 @@
 
 import { mat4 } from 'gl-matrix'
 
-export default class Camera
-{
-    constructor()
-    {
+export default class Camera {
+    constructor() {
         this.position = [0,0,0]
         this.target = [0,0,0]
         this.up = [0,1,0]
@@ -20,8 +18,7 @@ export default class Camera
 
         this.update()
     }
-    update()
-    {
+    update() {
         this.aspect = window.innerWidth / window.innerHeight;
         mat4.lookAt(this.view, this.position, this.target, this.up)
         mat4.perspective(this.proj, this.angle, this.aspect, this.znear, this.zfar)

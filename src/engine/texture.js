@@ -1,9 +1,7 @@
 // texture.js
 
-export default class Texture
-{
-    initBoundTexture(img)
-    {
+export default class Texture {
+    initBoundTexture(img) {
         let gl = this.gl
         try {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
@@ -15,23 +13,19 @@ export default class Texture
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
         gl.generateMipmap(gl.TEXTURE_2D)
     }
-    constructor(gl, src, isCanvas)
-    {
+    constructor(gl, src, isCanvas) {
         this.gl = gl
         this.texture = gl.createTexture()
 
-        if (src !== undefined)
-        {
+        if (src !== undefined) {
             this.load(src, isCanvas)
         }
     }
 
-    load(src, isCanvas)
-    {
+    load(src, isCanvas) {
         let gl = this.gl
 
-        if (isCanvas)
-        {
+        if (isCanvas) {
             this.width = src.width
             this.height = src.height
             
@@ -41,8 +35,7 @@ export default class Texture
             this.initBoundTexture(src)
             gl.bindTexture(gl.TEXTURE_2D, null)
         }
-        else
-        {
+        else {
             let img = document.createElement("img")
             img.crossOrigin = "anonymous"
             img.onload = () => {
